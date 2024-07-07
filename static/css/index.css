@@ -20,7 +20,7 @@ body {
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(29, 28, 28, 0.1);
     text-align: center;
-    width: 100%;
+    width: 90%;
     max-width: 500px;
 }
 
@@ -42,27 +42,50 @@ h2 {
 form {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    align-items: center;
+    gap: 15px;
+    align-items: center; /* Centering the form elements */
 }
 
-input[type="file"] {
-    padding: 10px;
+input[type="file"],
+input[type="text"] {
+    width: 100%;
+    max-width: 100%; /* Ensuring the inputs do not exceed the container width */
+    padding: 12px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    font-size: 16px;
+    margin-bottom: 10px;
+    box-sizing: border-box; /* Ensuring padding and border are included in the width */
+}
+
+input[type="text"] {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus {
+    border-color: #53b02e;
+    outline: none;
 }
 
 button {
-    padding: 10px 20px;
+    padding: 12px 20px;
     border: none;
     border-radius: 4px;
     background-color: #28a745;
     color: #fff;
+    font-size: 16px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%; /* Ensuring the button spans the width of the container */
+    max-width: 100%; /* Ensuring the button does not exceed the container width */
 }
 
-button:hover {
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+button:hover:enabled {
     background-color: #218838;
 }
-
-
