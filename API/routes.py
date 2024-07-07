@@ -30,11 +30,16 @@ def upload_file():
         return jsonify({"error": "No file part"}), 400
     
     file = request.files['pdf_file']
+    job_title = request.form.get('job_title')
+    
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
     
     if not file.filename.lower().endswith('.pdf'):
         return jsonify({"error": "File is not a PDF"}), 400
+    
+    if not job_title:
+        return jsonify({"error": "Job title is required"}), 400
     
     # Secure the filename and save it to the UPLOAD_FOLDER
     filename = secure_filename(file.filename)
@@ -44,6 +49,7 @@ def upload_file():
     # Read the pdf file content and save it to the session
     session['pdf_context'] = pdf_to_string(file_path)
     session['pdf_file_path'] = file_path
+    session['job_title'] = job_title
 
     # Redirect to the result page
     return redirect(url_for('routes.result'))
@@ -68,11 +74,15 @@ def prompt():
 @routes.route('/process_pdf', methods=['POST'])
 def process_pdf():
     pdf_file_path = session.get('pdf_file_path')
+    job_title = session.get('job_title')
     if not pdf_file_path or not os.path.exists(pdf_file_path):
         return jsonify({"error": "No PDF file uploaded or file path does not exist"}), 400
     
+    if not job_title:
+        return jsonify({"error": "Job title is required"}), 400
+
     try:
-        revised_pdf_path = process_and_annotate_pdf(pdf_file_path)
+        revised_pdf_path = process_and_annotate_pdf(pdf_file_path, job_title)
         session['revised_pdf_path'] = revised_pdf_path
         return jsonify({"revised_pdf_url": url_for('routes.download_revised_pdf')})
     except Exception as e:
