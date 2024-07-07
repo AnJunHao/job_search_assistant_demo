@@ -9,10 +9,10 @@ import spacy
 
 # Poe Tokens
 POE_TOKENS = {
-    'p-b': "y8952SqUCEBTPgDdQ6nniw%3D%3D", 
-    'p-lat': "sfEbS%2BSrhv3CmkhAIPalRTqISTWatEiWrqJrhshvfA%3D%3D",
+    'p-b': ..., 
+    'p-lat': ...,
 }
-TESTING = False # No API calls in testing
+TESTING = True # No API calls in testing
 
 # Load the spaCy model
 NLP = spacy.load('en_core_web_sm')
