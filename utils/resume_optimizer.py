@@ -9,10 +9,10 @@ import spacy
 
 # Poe Tokens
 POE_TOKENS = {
-    'p-b': ..., 
-    'p-lat': ...,
+    'p-b': "y8952SqUCEBTPgDdQ6nniw%3D%3D", 
+    'p-lat': "sfEbS%2BSrhv3CmkhAIPalRTqISTWatEiWrqJrhshvfA%3D%3D",
 }
-TESTING = True # No API calls in testing
+TESTING = False # No API calls in testing
 
 # Load the spaCy model
 NLP = spacy.load('en_core_web_sm')
@@ -173,7 +173,8 @@ def modify_resume_pdf(input_pdf_path, dict_reply, comment_reply):
     
     return modified_pdf_path
 
-BOT = Bot(tokens=POE_TOKENS)
+if not TESTING:
+    BOT = Bot(tokens=POE_TOKENS)
 
 def process_and_annotate_pdf(file_path):
 
