@@ -7,7 +7,7 @@ TESTING = True # No API calls in testing
 # score the resume and provide a comprehensive evaluation
 def welcome_users(pdf_text) -> str:
     if TESTING:
-        return 'NO API CALLS IN TESTING'
+        return 'Sample Welcome Message'
 
     prompt = """
     Please say hello to the candidate and welcome the candidate to use the service in 15 words.
@@ -24,7 +24,7 @@ def welcome_users(pdf_text) -> str:
 
 def comments(pdf_text) -> str:
     if TESTING:
-        return 'NO API CALLS IN TESTING'
+        return 'Sample Comments'
     prompt = """
     Please give this resume an objective score between 0-100 at the beginning of your answer.
     Please use the shortest possible language to provide a comprehensive evaluation of the resume.
@@ -43,7 +43,7 @@ def comments(pdf_text) -> str:
 # provide suggestions for improvement
 def revise(pdf_text) -> str:
     if TESTING:
-        return 'NO API CALLS IN TESTING'
+        return 'Sample Revision'
     prompt = """
     Please provide some suggestions for improvement, so the candidate can increase 
     their chances of getting hired.
@@ -62,7 +62,7 @@ def revise(pdf_text) -> str:
 
 def keywords(pdf_text) -> str:
     if TESTING:
-        return 'NO API CALLS IN TESTING'
+        return 'Sample Keywords'
     prompt = """
     Please provide five keywords that best describe and summarize the candidate's skills and experience
     to make the search results the most accurate.
