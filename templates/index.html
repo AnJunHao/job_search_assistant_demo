@@ -10,11 +10,31 @@
     <div class="container">
         <h1>Job Search Assistant</h1>
         <h2>Upload your PDF resume</h2>
-        <p class="description">Upload a PDF file. I can help you to adjust resume and match jobs !</p>
-        <form action="/api/upload" method="post" enctype="multipart/form-data">
-            <input type="file" name="pdf_file" accept="application/pdf">
-            <button type="submit">Upload</button>
+        <p class="description">Upload a PDF file. I can help you to adjust your resume and match jobs!</p>
+        <form id="uploadForm" action="/api/upload" method="post" enctype="multipart/form-data">
+            <input type="file" id="pdfFile" name="pdf_file" accept="application/pdf">
+            <input type="text" id="jobTitle" name="job_title" placeholder="Enter Job Title">
+            <button type="submit" id="reviseButton" disabled>Revise Resume</button>
         </form>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const pdfFileInput = document.getElementById('pdfFile');
+            const jobTitleInput = document.getElementById('jobTitle');
+            const reviseButton = document.getElementById('reviseButton');
+
+            function checkInputs() {
+                if (pdfFileInput.files.length > 0 && jobTitleInput.value.trim() !== '') {
+                    reviseButton.disabled = false;
+                } else {
+                    reviseButton.disabled = true;
+                }
+            }
+
+            pdfFileInput.addEventListener('change', checkInputs);
+            jobTitleInput.addEventListener('input', checkInputs);
+        });
+    </script>
 </body>
 </html>

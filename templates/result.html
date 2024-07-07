@@ -6,10 +6,57 @@
     <title>Job Search Service</title>
     <link rel="stylesheet" href="/static/css/result.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .container {
+            text-align: center;
+        }
+        #progress-bar-container {
+            width: 80%;
+            background-color: #f3f3f3;
+            margin: 20px auto;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        #progress-bar {
+            width: 0;
+            height: 30px;
+            background-color: #4caf50;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+        }
+        #progress-description {
+            margin: 20px 0;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        #download-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: grey;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: not-allowed;
+        }
+        .evaluation-and-advice {
+            display: flex;
+            justify-content: space-around;
+        }
+        .evaluation, .advice {
+            width: 45%;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h1 id="welcome-message"></h1>
+        <div id="progress-description">AI is revising your resume</div>
+        <div id="progress-bar-container">
+            <div id="progress-bar">0%</div>
+        </div>
+        <button id="download-button" disabled>Download Revised PDF</button>
         <div class="evaluation-and-advice">
             <div class="evaluation">
                 <h2>Comprehensive Evaluation</h2>
@@ -39,16 +86,32 @@
                 $.post("/api/prompt", {action: "revise"}, function(data) {
                     $("#revise-message").text(data.response);
                     $("#job-assistance").removeClass("hidden");
+                    startProgressBar();
                 });
             });
+
+            function startProgressBar() {
+                let progress = 0;
+                const maxProgress = 99;
+                const interval = setInterval(() => {
+                    if (progress < maxProgress) {
+                        progress += (maxProgress - progress) * 0.01;
+                        $("#progress-bar").css("width", Math.floor(progress) + "%").text(Math.floor(progress) + "%");
+                    } else {
+                        clearInterval(interval);
+                    }
+                }, 100);
+
+                // Start the PDF processing
+                $.post("/api/process_pdf", function(response) {
+                    clearInterval(interval);
+                    $("#progress-bar").css("width", "100%").text("100%");
+                    $("#download-button").css("background-color", "#4caf50").prop("disabled", false).css("cursor", "pointer").click(function() {
+                        window.location.href = response.revised_pdf_url;
+                    });
+                });
+            }
         });
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
