@@ -6,13 +6,17 @@ import re
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 import spacy
+from markdown import markdown
+from xhtml2pdf import pisa
+from io import BytesIO
+import tempfile
 
 # Poe Tokens
 POE_TOKENS = {
     'p-b': ...,
     'p-lat': ...,
 }
-TESTING = True # No API calls in testing
+TESTING = False # No API calls in testing
 
 # Load the spaCy model
 NLP = spacy.load('en_core_web_sm')
@@ -83,7 +87,7 @@ class Bot:
             message=text,
             chatId=chat_id
         ):
-            print('...', end='')
+            print('.', end='')
         print('Done!')
         return reply
 
@@ -150,22 +154,47 @@ def modify_resume_pdf(input_pdf_path, dict_reply, comment_reply):
     
     # Add a new page for the final comment
     if comment_reply:
-        new_page = doc.new_page()
-        width, height = new_page.rect.width, new_page.rect.height
+        # Convert Markdown to HTML
+        html_content = markdown(comment_reply)
         
-        # Define the rectangle for the textbox
-        text_rect = fitz.Rect(50, 50, width - 50, height - 50)
+        # Wrap the HTML content in a styled div to increase text size
+        styled_html = f"""
+        <html>
+        <head>
+            <style>
+                body {{
+                    font-family: Arial, sans-serif;
+                    font-size: 14pt;
+                    line-height: 1.6;
+                    margin: 40px;
+                }}
+                h1 {{ font-size: 24pt; }}
+                h2 {{ font-size: 20pt; }}
+                h3 {{ font-size: 18pt; }}
+            </style>
+        </head>
+        <body>
+            {html_content}
+        </body>
+        </html>
+        """
         
-        # Insert the final comment into the textbox
-        new_page.insert_textbox(
-            text_rect,
-            f"Final Comment:\n{comment_reply}",
-            fontsize=10,
-            fontname="helv",
-            color=(0, 0, 0),
-            align=fitz.TEXT_ALIGN_LEFT
-        )
-    
+        # Create a PDF from HTML
+        pdf_buffer = BytesIO()
+        pisa.CreatePDF(styled_html, dest=pdf_buffer)
+        pdf_buffer.seek(0)
+        
+        # Save the rendered PDF to a temporary file
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
+            tmp_file.write(pdf_buffer.getvalue())
+            tmp_file_path = tmp_file.name
+
+        # Insert the temporary PDF into the main document
+        doc.insert_file(tmp_file_path)
+
+        # Remove the temporary file
+        os.unlink(tmp_file_path)
+
     # Save the modified PDF
     base, ext = os.path.splitext(input_pdf_path)
     modified_pdf_path = f"{base}_modified{ext}"
