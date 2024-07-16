@@ -47,7 +47,7 @@ def upload_file():
     file.save(file_path)
     
     # Read the pdf file content and save it to the session
-    session['pdf_context'] = pdf_to_string(file_path)
+    # session['pdf_context'] = pdf_to_string(file_path)
     session['pdf_file_path'] = file_path
     session['job_title'] = job_title
 
@@ -57,7 +57,8 @@ def upload_file():
 @routes.route('/prompt', methods=['POST'])
 def prompt():
     action = request.form.get('action')
-    pdf_text = session.get('pdf_context')
+    file_path = session.get('pdf_file_path')
+    pdf_text = pdf_to_string(file_path)
     if action == 'welcome':
         response = welcome_users(pdf_text)
     elif action == 'comments':
@@ -74,7 +75,9 @@ def prompt():
 @routes.route('/process_pdf', methods=['POST'])
 def process_pdf():
     pdf_file_path = session.get('pdf_file_path')
+    print(pdf_file_path)
     job_title = session.get('job_title')
+    print(job_title)
     if not pdf_file_path or not os.path.exists(pdf_file_path):
         return jsonify({"error": "No PDF file uploaded or file path does not exist"}), 400
     
